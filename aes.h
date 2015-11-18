@@ -3,6 +3,6 @@
 
 #include <inttypes.h>
 
-void aes_decrypt(uint8_t *key, uint8_t *text);
+void aes_decrypt(uint8_t *text);
 
 #endif /* AES_H_ */
