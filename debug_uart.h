@@ -1,5 +1,5 @@
-#ifndef DEBUGUART_H
-#define DEBUGUART_H
+#ifndef DEBUG_UART_H
+#define DEBUG_UART_H
 
 
 #define UART_UBRR_CALC(BAUD_,FREQ_) ((FREQ_)/((BAUD_)*16L)-1)

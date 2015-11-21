@@ -4,7 +4,7 @@
 #include <inttypes.h>
 
 #include "config.h"
-#include "debugUART.h"
+#include "debug_uart.h"
 
 
 static FILE uartStdout = FDEV_SETUP_STREAM( uartPutChar, NULL, _FDEV_SETUP_WRITE );

@@ -10,7 +10,7 @@ MCU = atmega644
 F_CPU = 3276800
 FORMAT = ihex
 TARGET = main
-SRC = main.c debugUART.c uart.c aes.c
+SRC = main.c debug_uart.c uart.c aes.c
 ASRC =
 OPT = s
 

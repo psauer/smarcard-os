@@ -9,6 +9,7 @@
 
 volatile uint8_t etuFlag, startBitFlag;
 
+
 //
 // Interrupts
 
@@ -83,12 +84,12 @@ void init_uart(int *errnum) {
 }
 
 void uart_write_byte(uint8_t *InputBufferPtr) {
-  enum iso7816_states_t state = START_BIT;
+  enum uart_states_t state = START_BIT;
   uint8_t etuCycle = 0;
   uint8_t parityBit = 0;
   uint8_t payloadCopy = 0;
 
-  #if DEBUG_ISO7816 == 1
+  #if DEBUG_UART == 1
     printf("Sending payload 0x%X.\n", *InputBufferPtr);
   #endif
 
@@ -179,7 +180,7 @@ void uart_write(uint8_t *InputBufferPtr, uint8_t NumBytes) {
 }
 
 void uart_read_byte(uint8_t *OutputBufferPtr) {
-  enum iso7816_states_t state = START_BIT;
+  enum uart_states_t state = START_BIT;
   uint8_t payload = 0;
   uint8_t etuCycle = 0;
   uint8_t etuCycleBit = 0;
@@ -260,7 +261,7 @@ void uart_read_byte(uint8_t *OutputBufferPtr) {
 
   resetTimer();
 
-  #if DEBUG_ISO7816 == 1
+  #if DEBUG_UART == 1
     printf("Received payload 0x%X.\n", payload);
   #endif
 

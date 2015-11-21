@@ -2,7 +2,7 @@
 #define UART_H_
 #include <inttypes.h>
 
-enum iso7816_states_t {
+enum uart_states_t {
   START_BIT,
   DATA_BITS,
   PARITY_BIT,

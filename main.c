@@ -6,7 +6,7 @@
 
 #include "config.h"
 #include "uart.h"
-#include "debugUART.h"
+#include "debug_uart.h"
 #include "common.h"
 #include "aes.h"
 
