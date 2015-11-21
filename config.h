@@ -6,7 +6,8 @@
 
 #ifdef DEBUG
 
-#define DEBUG_ISO7816 1
+// WARNING: enabling DEBUG_ISO7816 will cause the smartcard to stop working due to the huge delays from the printf statements
+#define DEBUG_ISO7816 0
 
 #endif
 

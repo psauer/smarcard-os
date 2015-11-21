@@ -8,16 +8,12 @@
 #include "common.h"
 
 volatile uint8_t etuFlag, startBitFlag;
+
 //
 // Interrupts
 
 // ETU interrupt
 ISR(TIMER0_COMPA_vect) {
-  etuFlag = 1;
-}
-
-// ETU shifted by 0.5 ETUs interrupt
-ISR(TIMER0_COMPB_vect) {
   etuFlag = 1;
 }
 
@@ -28,7 +24,6 @@ ISR(PCINT1_vect) {
     startBitFlag = 1;
   }
 }
-
 
 //
 // Static functions
@@ -56,11 +51,15 @@ static void waitForStartBit(void) {
 }
 
 static void enableTimer(void) {
+  // enable output compare event A
+  TIMSK0 |= (1 << OCIE0A);
   // enable counter 0 and set prescaler to 8 => 46 * 8 ~ 372
   TCCR0B |= (1 << CS01);
 }
 
 static void resetTimer(void) {
+  // disable output compare event A
+  TIMSK0 &= ~(1 << OCIE0A);
   // disable counter 0
   TCCR0B &= !(1 << CS01);
   // reset counter 0
@@ -68,7 +67,6 @@ static void resetTimer(void) {
 }
 
 void init_uart(int *errnum) {
-  //insert code here
   // idle smartcard io
   setEtuCycleBit(1);
 
@@ -78,10 +76,9 @@ void init_uart(int *errnum) {
   TCCR0A |= (1 << WGM01);
   // set output compare register A to 1 ETU (46)
   OCR0A = 0x2E;
-  // set output compare register B to 1 ETU shifted by 0.5 ETU (23)
-  OCR0B = 0x17;
   // enable global interupt
   sei();
+
   *errnum = NO_ERROR;
 }
 
@@ -95,12 +92,9 @@ void uart_write_byte(uint8_t *InputBufferPtr) {
     printf("Sending payload 0x%X.\n", *InputBufferPtr);
   #endif
 
-  // set etuFlag to 1 so that START_BIT can be
-  // set immediately
+  // set etuFlag to 1 so that START_BIT is set immediately
   etuFlag = 1;
 
-  // enable output compare event A
-  TIMSK0 |= (1 << OCIE0A);
   enableTimer();
 
   while (state != DONE) {
@@ -112,26 +106,37 @@ void uart_write_byte(uint8_t *InputBufferPtr) {
         case START_BIT:
           setEtuCycleBit(0);
           etuCycle++;
+
           payloadCopy = *InputBufferPtr;
+
           state = DATA_BITS;
           break;
+
         case DATA_BITS:
           setEtuCycleBit(payloadCopy & 0x01);
           parityBit ^= (payloadCopy & 0x01);
+
           payloadCopy >>= 1;
           etuCycle++;
+
           if (etuCycle == 9) {
             state = PARITY_BIT;
           }
+
           break;
+
         case PARITY_BIT:
           setEtuCycleBit(parityBit);
+
           etuCycle++;
           state = STOP_BITS;
+
           break;
+
         case STOP_BITS:
           setEtuCycleBit(1);
           etuCycle++;
+
           if (etuCycle == 12) {
             // parity error?
             if ((PINB >> SMARTCARD_IO) & 0x01) {
@@ -140,13 +145,17 @@ void uart_write_byte(uint8_t *InputBufferPtr) {
               state = PARITY_ERROR;
             }
           }
+
           break;
+
         case PARITY_ERROR:
           setEtuCycleBit(1);
           state = START_BIT;
           etuCycle = 0;
           parityBit = 0;
+
           break;
+
         case DONE:
           break;
       }
@@ -158,8 +167,6 @@ void uart_write_byte(uint8_t *InputBufferPtr) {
   // idle smartcard IO
   SMARTCARD_HIGH_Z();
 
-  // disable output compare event A
-  TIMSK0 &= ~(1 << OCIE0A);
   resetTimer();
 }
 
@@ -178,12 +185,11 @@ void uart_read_byte(uint8_t *OutputBufferPtr) {
   uint8_t etuCycleBit = 0;
   uint8_t parityBit = 0;
 
-  etuFlag = 0;
+  etuFlag = 1;
 
   waitForStartBit();
 
-  // enable output compare event B
-  TIMSK0 |= (1 << OCIE0B);
+  // The delay between the detection of the start bit and start of the timer is sufficient to ensure the bit on the smartcard IO is always read when it is stable
   enableTimer();
 
   while (state != DONE) {
@@ -205,12 +211,16 @@ void uart_read_byte(uint8_t *OutputBufferPtr) {
           if (etuCycle == 8) {
             state = PARITY_BIT;
           }
+
           break;
+
         case PARITY_BIT:
           etuCycleBit = (PINB >> SMARTCARD_IO) & 0x01;
           etuCycle++;
           state = STOP_BITS;
+
           break;
+
         case STOP_BITS:
           // parity error?
           if (etuCycleBit == parityBit) {
@@ -223,12 +233,14 @@ void uart_read_byte(uint8_t *OutputBufferPtr) {
             setEtuCycleBit(0);
             state = PARITY_ERROR;
           }
+
           break;
+
         case PARITY_ERROR:
           setEtuCycleBit(1);
 
           resetTimer();
-          etuFlag = 0;
+          etuFlag = 1;
           etuCycle = 0;
           parityBit = 0;
           payload = 0;
@@ -239,19 +251,19 @@ void uart_read_byte(uint8_t *OutputBufferPtr) {
           enableTimer();
 
           break;
+
         case DONE:
           break;
       }
     }
   }
 
-  // disable output compare event B
-  TIMSK0 &= ~(1 << OCIE0B);
   resetTimer();
 
   #if DEBUG_ISO7816 == 1
     printf("Received payload 0x%X.\n", payload);
   #endif
+
     *OutputBufferPtr = payload;
 }
 

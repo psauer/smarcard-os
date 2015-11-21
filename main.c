@@ -11,7 +11,7 @@
 #include "aes.h"
 
 static void get_command(APDU_command *cmd, APDU_response *response, int *errnum) {
-  int i;
+  uint8_t i;
   uint8_t in_buffer[6];
 
   //reading command from uart. cmd is 5 bytes long
@@ -99,4 +99,3 @@ int main(void) {
   }
   return 0;
 }
-
