@@ -48,6 +48,7 @@ void expandKey(uint8_t *roundKeys) {
 
         // update rcon and reduce if necessary
         rcon <<= 1;
+
         if (rcon == 0)
         {
           rcon = 0x1B;
@@ -75,7 +76,7 @@ int main() {
   // expand key
   expandKey(expandedKeys);
 
-  for (i = 0; i < 11*16; i++) {
+  for (i = 0; i < 11 * 16; i++) {
     if (i == 0) {
       printf("static uint8_t roundKeys[11 * 16] = {\r\n");
       printf("  0x%02X", expandedKeys[i]);
