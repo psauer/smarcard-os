@@ -10,7 +10,7 @@ MCU = atmega644
 F_CPU = 3276800
 FORMAT = ihex
 TARGET = main
-SRC = $(TARGET).c
+SRC = main.c debugUART.c uart.c aes.c
 ASRC =
 OPT = s
 
@@ -56,7 +56,7 @@ PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
 # Floating point printf version (requires MATH_LIB = -lm below)
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
 
-PRINTF_LIB =
+PRINTF_LIB = $(PRINTF_LIB_MIN)
 
 # Minimalistic scanf version
 SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
