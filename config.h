@@ -6,9 +6,11 @@
 
 #ifdef DEBUG
 
-#define DEBUG_ISO7816 1
+// WARNING: enabling DEBUG_UART will cause the smartcard to stop working due to
+// the huge delays from the printf statements
+# define DEBUG_UART 0
 
-#endif
+#endif /* ifdef DEBUG */
 
 #define UART_BAUD_RATE 9600
 #define CLA 0x88
@@ -31,9 +33,9 @@
 #define SMARTCARD_IO PB6
 
 #define SMARTCARD_HIGH_Z() DDRB &= 0xBF; PORTB |= 0x40;
-#define SMARTCARD_LOW() DDRB |= 0x40; PORTB &= 0xBF;
+#define SMARTCARD_LOW() DDRB    |= 0x40; PORTB &= 0xBF;
 
-typedef struct APDU_command_t{
+typedef struct APDU_command_t {
   uint8_t cla;
   uint8_t ins;
   uint8_t p1;
@@ -42,9 +44,9 @@ typedef struct APDU_command_t{
   uint8_t data[16];
 } APDU_command;
 
-typedef struct APDU_response_t{
+typedef struct APDU_response_t {
   uint8_t sw1;
   uint8_t sw2;
 } APDU_response;
 
-#endif
+#endif /* ifndef CONFIG_H */

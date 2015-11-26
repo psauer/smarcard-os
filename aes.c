@@ -125,7 +125,7 @@ static uint8_t roundKeys[11 * 16] = {
 static void invMixColumns(uint8_t *input) {
   uint8_t a0, a1, a2, a3, i;
 
-  for(i = 0; i < 4; i++) {
+  for (i = 0; i < 4; i++) {
     // buffer column
     a0 = input[0];
     a1 = input[1];
@@ -155,9 +155,9 @@ static void invShiftRows(uint8_t *input) {
   temp = input[13];
 
   input[13] = input[9];
-  input[9] = input[5];
-  input[5] = input[1];
-  input[1] = temp;
+  input[9]  = input[5];
+  input[5]  = input[1];
+  input[1]  = temp;
 
   // 3rd row - shift 2 to the right
   SWAP(input[14], input[6]);
@@ -167,8 +167,8 @@ static void invShiftRows(uint8_t *input) {
   temp = input[15];
 
   input[15] = input[3];
-  input[3] = input[7];
-  input[7] = input[11];
+  input[3]  = input[7];
+  input[7]  = input[11];
   input[11] = temp;
 }
 
@@ -187,8 +187,9 @@ static void addRoundKey(uint8_t *input, uint8_t *roundKey) {
     input[i] = input[i] ^ roundKey[i];
   }
 }
+
 void aes_decrypt(uint8_t *text) {
-  uint8_t i;
+  uint8_t  i;
   uint8_t *roundKeysPtr;
 
   roundKeysPtr = roundKeys + 160;
@@ -207,4 +208,3 @@ void aes_decrypt(uint8_t *text) {
     }
   }
 }
-

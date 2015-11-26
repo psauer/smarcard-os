@@ -5,4 +5,4 @@
 
 void aes_decrypt(uint8_t *text);
 
-#endif /* AES_H_ */
+#endif /* ifndef AES_H_ */

@@ -5,4 +5,4 @@
 #define ABORT_ERROR 66
 #define WARNING_ERROR 67
 
-#endif
+#endif /* ifndef COMMON_H_ */
